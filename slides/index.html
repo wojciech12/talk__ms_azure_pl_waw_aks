@@ -1,0 +1,794 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Azure Kubernetes Service</title>
+
+		<!-- bootstrap -->
+		<link rel="stylesheet" href="ext/bootstrap-4.1.3/css/bootstrap.css">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/white.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!-- remove annoying shadow around images -->
+		<style>
+			.reveal section img {
+				background-color:white;
+				border:0;
+				box-shadow: 0 0 0 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h3>Azure Kubernetes Service</h3>
+
+					<img src="img/azure_love_k8s.png" class="center-block" style="background-color:white;border:0;width:100%"/>
+					<br />
+					<br />
+
+					<small>Wojciech Barczynski - SMACC.io i Hypatos.ai<br />Wrzesień 2018</small>
+				</section>
+
+				<section>
+					<h3>Wojciech Barczyński</h3>
+					<div class="container">
+						<div class="row">
+							<div class='col-md-8'>
+								<ul>
+									<li>Lead Software Engineer &amp; System Engineer</li>
+									<li>Interests:<br />working software</li>
+									<li>Hobby:<br />teaching software engineering</li>
+								</ul>
+							</div>
+							<div class='col-md-3'>
+								<img style="padding:12px" src="img/logo_smacc_hypatos.png" />
+							</div
+						</div>
+					</section>
+
+				<section>
+					<h3>Background</h3>
+					<ul>
+						<li>ML FinTech ➡ microservices and k8s</li>
+						<li>Before: a top Indonesian mobile ecommerce to k8s</li>
+						<li>3.5y with Openstack, 1000+ nodes, 21 data centers</li>
+						<li>Experience with AWS and GCP</li>
+						<li>I do not like INFRA :D</li>
+					</ul>
+				</section>
+
+				<section>
+					<h3>Dlaczego?</h3>
+					<ul>
+						<li>Admistracja jest trudna i kosztowna</li>
+						<li>Virtualne Maszyny, ansible, salt, etc.</li>
+						<li>Za dużo ruchomych części</li>
+						<li>Nie kończąca się standaryzacja</li>
+					</ul>
+				</section>
+
+				<section>
+					<h3>Mikroserwisy AAA!</h3>
+					<img src="img/rubber_duck_sea.jpg" />
+				</section>
+
+				<section>
+					<h3>Dlaczego?</h3>
+					<ul>
+						<li>Chmura jednak $$$</li>
+					</ul>
+				</section>
+
+				<section>
+					<h3>Imagine</h3>
+					<p>Świat</p>
+					<ul>
+						<li>bez wiedzy o IaaS</li>
+						<li>żadnego konfigurowania na nodzie</li>
+						<li>mniej dyskusji o CI / CD ...</li>
+						<li>Środowisko jak czarna skrzynka</li>
+					</ul>
+				</section>
+
+				<section>
+					<h4>Kubernetes</h4>
+					<ul>
+						<!-- li>Data center as a black-box</li -->
+						<li>Simple Semantic*</li>
+						<li>Batteries for your 12factory apps</li>
+						<li>Service discovery, meta-data support</li>
+						<li>Independent from IaaS provider</li>
+					</ul>
+				</section>
+
+				<section>
+					<h4>Goals</h4>
+					<ul>
+						<li>Utilzie resources to early 100%</li>
+						<li>Application and services mindset</li>
+				</ul>
+				</section>
+
+<!--
+## Why Kubernetes?
+
+- Data Center as a Black Box
+- Batteries for your (12factor) apps
+
+WHY, HOW, WHAT
+
+- Give you complete control over your application with simple *yaml* config files
+- Use *labels* to auto-wire your app to monitoring, logging, and alarming
+- Let you to, almost forget, about the infrastructure
+-->
+
+				<!-- section>
+					<h4>Ostatnio</h4>
+					<ul>
+						<li>Platfroma integracyjne - patrz SAP</li>
+					</ul>
+				</section -->
+
+				<section>
+					<h4>Kubernetes</h4>
+				</section>
+
+								<!-- section data-markdown>
+									<script type="text/template">
+				<h5>Data center as a Black box</h5>
+									</script>
+								</section -->
+								<!-- img src="img/kubernetes_logo.svg" style="background-color:white;width:60%" / -->
+
+								<section>
+									<h3>Kubernetes</h3>
+									<img src="img/k8s_intro.svg" style="width:90%"/>
+									<small><code>make docker_push; kubectl create -f app-srv-dpl.yaml</code></small>
+								</section>
+
+								<section>
+									<h3>Scale up! Scale down!</h3>
+									<img src="img/k8s_intro_scale_up.svg" style="width:90%"/>
+									<small><code>kubectl --replicas=3 -f app-srv-dpl.yaml</code></small>
+								</section>
+
+								<section>
+									<h3>Scale up! Scale down!</h3>
+									<img src="img/k8s_intro_scale_down.svg" style="width:90%"/>
+									<small><code>kubectl --replicas=1 -f app-srv-dpl.yaml</code></small>
+								</section>
+
+								<section>
+									<h2>How get user requests?</h2>
+				<img src="img/traefik_architecture.svg" width="90%"/>
+				<small>Ingress Controller</small>
+								</section>
+
+								<section data-markdown>
+									<script type="text/template">
+				### Ingress
+
+				<table>
+					<thread>
+						<tr>
+							<th>Pattern</th><th>Target App Service</th>
+						</tr>
+					</thread>
+					<tbody>
+						<tr>
+							<td>api.smacc.io/v1/users</td><td>users-v1</td>
+						</tr>
+						<tr>
+							<td>api.smacc.io/v2/users</td><td>users-v2</td>
+						</tr>
+						<tr>
+							<td>smacc.io</td><td>web</td>
+						</tr>
+					</tbody>
+				</table>
+									</script>
+								</section>
+
+								<section data-markdown>
+									<script type="text/template">
+				## Rolling updates!
+
+				<img src="img/k8s_updates_rolling_1.svg" style="width:80%"/>
+				<small><code>kubectl set image deployment/app app=app:v2.0.0</code></small>
+									</script>
+								</section>
+
+								<section data-markdown>
+									<script type="text/template">
+				## Rolling updates!
+
+				<img src="img/k8s_updates_rolling_2.svg" style="width:80%"/>
+									</script>
+								</section>
+
+								<!-- RollingUpdateStrategy -->
+								<!-- maxUnavailable -->
+								<section data-markdown>
+									<script type="text/template">
+				## Rolling updates!
+
+				<img src="img/k8s_updates_rolling_3.svg" style="width:80%"/>
+									</script>
+								</section>
+
+								<section>
+				<h3>Load Balancing</h3>
+				<img src="img/k8s_loadbalancing.svg" style="width:90%"/>
+								</section>
+
+								<section data-markdown>
+									<script type="text/template">
+				## Resistance!
+
+				<img src="img/k8s_ha_resistance_1.svg" style="width:80%">
+									</script>
+								</section>
+
+								<section data-markdown>
+									<script type="text/template">
+				## Resistance!
+
+				<img src="img/k8s_ha_resistance_2.svg" style="width:80%">
+									</script>
+								</section>
+
+								<section data-markdown>
+									<script type="text/template">
+				## Resistance!
+
+				<img src="img/k8s_ha_resistance_3.svg" style="width:80%">
+									</script>
+								</section>
+
+								<section data-markdown>
+									<script type="text/template">
+				## Resistance!
+
+				- When a node dies
+				- When other apps eats all memory
+				- When we drain nodes before upgrade
+				- You can easily scale up, create machine and join it to cluster (easier with kops or on GCE)
+									</script>
+								</section>
+
+								<section data-markdown>
+									<script type="text/template">
+				## Federation
+				<img src="img/k8s_federation.svg" style="width:80%" />
+									</script>
+								</section>
+
+								<section data-markdown>
+									<script type="text/template">
+				## Service Discovery
+
+				- names in DNS: <br /><code>curl http://users/list</code>
+				- labels:<br /><code>name=value</code>
+				- annotations: <br /><code>prometheus.io/scrape: "true"</code>
+									</script>
+								</section>
+
+								<section data-markdown>
+									<script type="text/template">
+								## Service Discovery
+								- loosely couple components
+								- auto-wiring with logging and monitoring
+							</script>
+						</section>
+
+					<section data-markdown>
+						<script type="text/template">
+						## Configuration Files
+						- Yaml
+						- easy to generate and work with
+					</script>
+				</section>
+
+<section>
+<h2>Kubernetes @ Azure</h2>
+</section>
+
+<section>
+	<h2>Options</h2>
+<ul>
+	<li>AKS - managed</li>
+	<li>ACS - installation wizard</li>
+	<li>Your own installation with Installer</li>
+</ul>
+</section>
+
+<section>
+	<h2>AKS</h2>
+<ul>
+	<li>GKE for Google</li>
+	<li>EKS or Fargate for Amazon</li>
+</ul>
+</section>
+
+<section>
+	<h2>AKS</h2>
+<ul>
+	<li>Independent from IaaS</li>
+	<li>Our OnPrem = Our OnCloud</li>
+	<li>Consolidation of our micro-services</li>
+	<li>Plug end play, e.g., monitoring</li>
+</ul>
+</section>
+
+<section>
+	<h2>AKS</h2>
+	<ul>
+		<li>You: k8s workers</li>
+		<li>Azure: k8s masters</li>
+	</ul>
+</section>
+
+<section>
+	<h2>AKS</h2>
+	<ul>
+		<li>You: upgrade your k8s</li>
+		<li>Azure: update your kube-system pods, k8s config, and nodes</li>
+	</ul>
+</section>
+
+<section>
+	<h2>Azure Updates</h2>
+	<p>Bumpy road ahead</p>
+	<ul>
+		<li>Kube-Systen pods</li>
+		<li>Kubernetes configuration - &#x2620;</li>
+		<li>System: on the node restart applied</li>
+		<li>System: Memory-preserving updates - &#x2620;</li>
+	</ul>
+</section>
+
+<section>
+<h2>Azure Updates - Nodes</h2>
+
+<pre><code>NAME                       VERSION   OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME
+aks-nodepool1-27173880-0   v1.10.3   Ubuntu 16.04.4 LTS   4.15.0-1018-azure   docker://1.13.1
+aks-nodepool1-27173880-1   v1.10.3   Ubuntu 16.04.4 LTS   4.15.0-1018-azure   docker://1.13.1
+aks-nodepool1-27173880-2   v1.10.3   Ubuntu 16.04.4 LTS   4.15.0-1018-azure   docker://1.13.1
+aks-nodepool1-27173880-3   v1.10.3   Ubuntu 16.04.4 LTS   4.15.0-1018-azure   docker://1.13.1
+aks-nodepool1-27173880-5   v1.10.3   Ubuntu 16.04.4 LTS   4.15.0-1019-azure   docker://1.13.1</code></pre>
+
+<small><code>kubectl get nodes  -o wide</code></small>
+</section>
+
+<section>
+<h2>Azure Updates - K8S</h2>
+<ul>
+	<li>Scalling down / up your cluster applies the newest k8s config changes</li>
+</ul>
+</section>
+
+<section>
+	<h2>Azure K8S Integration</h2>
+	<ul>
+		<li>Load Balancers</li>
+		<li>Persistence Volumes</li>
+		<li>Graphic Cards Support</li>
+		<li>Authentication with oauth</li>
+		<li>Monitoring?</li><!-- nie sprawdzalem jeszcze -->
+	</ul>
+</section>
+
+<section>
+	<h2>Limits</h2>
+<ul>
+	<li>No node-pool support</li>
+	<li>RBAC?</li>
+	<li>No limited centralized logging</li>
+	<li>Federation support</li>
+</ul>
+</section>
+
+<section>
+	<h2>Pain points</h2>
+<ul>
+	<li>Memory preserving updates</li><!-- http://wbarczynski.pl/aks-ga-is-it-the-right-time-to-start/ -->
+	<li>AKS team changes configuration</li>
+</ul>
+</section>
+
+<section>
+	<h2>Annoying</h2>
+<ul>
+	<li>Slow deletes</li>
+	<li>Slow attaching and detaching volumes</li>
+	<li>You are not able to delete a pod without <code>--force</code></li>
+</ul>
+</section>
+
+<section>
+<h2>Love</h2>
+<ul>
+	<li>Openess on github: <a href="https://github.com/Azure/AKS/issues">AKS issues</a></li>
+</ul>
+</section>
+
+<section>
+	<h2>Create</h2>
+	<pre><code>az aks create --name portal-production \
+--resource-group MYCOMPANY \
+--node-vm-size 'Standard_D4_v2' \
+--node-count 4 \
+--generate-ssh-keys</code></pre>
+</section><!-- --enable-addons monitoring -->
+
+<section>
+<h2>Create</h2>
+<h5>Go to <a href="https://portal.azure.com/">portal</a></h5>
+<p><small><a href="https://docs.microsoft.com/en-us/azure/aks/aks-ssh">ssh to nodes</a></small></p>
+</section>
+
+<section>
+<h2>Ready to go!</h2>
+<ul>
+<li><code>az aks get-credentials -g MYCOMP -n portal-prod</code></li>
+<li><code>kubectl get pods</code></li>
+</ul>
+</section>
+
+<section>
+	<h2>Update</h2>
+
+<pre><code>Name   MasterVersion    NodePoolVersion    Upgrades
+-------  ---------------  -----------------  --------------------------------------
+default            1.10.3           1.10.3             1.10.5, 1.10.6, 1.10.7, 1.11.1, 1.11.2</code></pre>
+
+<small><code>az aks get-upgrades -g MYCOMP  --name portal-dev -o table</code></small>
+</section>
+
+<section>
+<h2>Update</h2>
+<pre><code>az aks upgrade --name portal-dev\
+--resource-group MYCOMP \
+--output table \
+--kubernetes-version 1.10.3</code></pre>
+
+<small>Do not rush!</small>
+<!-- I do not do to any version that it is not production in GKE -->
+</section>
+
+<section>
+<h2>Update</h2>
+<pre><code>az aks upgrade --name portal-dev\
+--resource-group MYCOMP \
+--output table \
+--kubernetes-version 1.10.3</code></pre>
+
+<small>Do not rush!</small>
+<!-- I do not do to any version that it is not production in GKE -->
+</section>
+
+<section>
+<h2>AKS @ SMACC</h2>
+</section>
+
+<section>
+	<h2>Setup Azure</h2>
+	<ul>
+		<li>az aks CLI for setting k8s</li>
+		<li>Terraform for everything else</li>
+	</ul>
+	<p><small>TF also sets our AWS</small></p>
+</section>
+
+<section>
+	<h2>Kubernetes</h2>
+	<ul>
+		<li>Pure, generated, kubernetes config</li>
+		<li>2x kubernetes operators</li>
+	</ul>
+</section>
+
+<section>
+<h2>Continuous Deployment</h2>
+<ul>
+	<li>Github</li>
+	<li>TravisCI</li>
+	<li>hub.docker.com</li>
+	<li>Kubernetes</li>
+</ul>
+<p><small>In spirit similar to the <a href="https://www.youtube.com/watch?v=kOa_llowQ1c">Kelsey Hightower approach</a></small></p>
+</section>
+
+<section>
+<h2>Backup</h2>
+<ul>
+	<li>Ark</li>
+	<li>CronJobs for some components</li>
+</ul>
+</section>
+
+<section>
+	<h2>Enviornemnts</h2>
+					<table>
+						<thread>
+							<tr>
+								<th>Env</th><th>Number of Nodes</th>
+							</tr>
+						</thread>
+						<tbody>
+							<tr>
+								<td>Prod</td><td>7</td>
+							</tr>
+							<tr>
+								<td>Staging</td><td>5</td>
+							</tr>
+							<tr>
+								<td>Dev</td><td>4</td>
+							</tr>
+							<tr>
+								<td>Tools</td><td>1</td>
+							</tr>
+						</tbody>
+					</table>
+<small>We also have short-living ML clusters</small>
+</section>
+
+<section>
+<h2>Summary</h2>
+<ul>
+	<li>Kubernetes not a silver bullet, but damn close</li>
+	<li>AKS the easiest way to start with k8s in Azure</li>
+	<li>Still bumpy period - see github issues</li>
+</ul>
+</section>
+
+<section data-background="img/smacc_header_IT_source.jpg" data-background-repeat="" data-background-size="100%" data-background-position="bottom"
+			style="position: relative; top:0">
+				<h4>Dziękuję. Pytania?</h4>
+				<p>ps. We are hiring.</p>
+			</section>
+
+				<!--
+					BACKUP SLIDES
+				-->
+			<section data-background="img/smacc_header_IT_source.jpg" data-background-repeat="" data-background-size="100%" data-background-position="bottom" style="position: relative; top:0">
+				<h2>Backup Slides</h2>
+			</section>
+
+			<section>
+				<h1>0.1 ➡ 1.0</h1>
+			</section>
+
+
+				<section data-markdown>
+					<script type="text/template">
+### 1. Clean up
+
+- Single script for repo - Makefile [1]
+- Resurrect the README
+
+<small>[1] With zsh or bash auto-completion plugin in your terminal.</small>
+					</script>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+### 2. Get back all the knowledge
+
+- Puppet, Chef, ... ➡ Dockerfile
+- Check the instances ➡ Dockerfile, README.rst
+- Nagios, ... ➡ README.rst, <code>checks/</code>
+					</script>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+### 3. Introduce run_local
+
+- <code>make run_local</code>
+- A nice section on how to run in README.rst
+- Use: <code>docker-compose</code>
+
+The most crucial point.
+					</script>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+### 4. Get to kubernetes
+
+- <code>make kube_create_config</code>
+- <code>make kube_apply</code>
+- Generate the yaml files if your envs differ
+					</script>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+### 5. Continuous Deployment
+
+Travis:
+
+- test code, build docker, push to docker repo
+- only run the rolling update:<br />
+<code>kubectl set image deployment/api-status nginx=nginx:1.9.1</code>
+- did not create any kubernetes artificats [*]
+
+[*]
+					</script>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+### 6. Keep it running
+
+Bridge the new with old:
+
+- Use external services in Kubernetes
+- Add Kubernetes services to your Service Discovery [1]
+
+<small>[1] I evaluated feeding K8S events to HashiCorp consul</small>
+					</script>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+<img src="img/backup_slides/lyke_new_with_old.svg" width="80%">
+
+</script>
+</section>
+
+				<section data-markdown>
+					<script type="text/template">
+### 7. Introduce smoke-test
+
+<pre><code class="bash">	TARGET_URL=127.0.0 make smoke_test
+	TARGET_URL=api.example.com/users make smoke_test</code></pre>
+					</script>
+<small>Cut pinging tester or ... to check whether component really is running</small>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+### 8. Got first micro-services
+
+To offload the biggest components:
+
+- Keep the light on of the old components
+- New functionality delegated to micro-services
+					</script>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+### 9. Get performance testing
+
+- introduce wrk for evaluating performance (more like a check for dockers)
+- load test the real system
+					</script>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+					### Service self-consciousness
+
+					Add to old services:
+
+					1. <i>metrics/</i>
+					2. <i>health/</i>
+					3. <i>info/</li>
+					4. <i>alertrules/</i> - PoC
+					</script>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+					### Change the work organization
+
+					- From Scrum
+					- To Kanban
+
+					For the next talk
+					</script>
+				</section>
+
+			<section>
+				<h1>Kubernetes Concepts</h1>
+			</section>
+
+		<section>
+			<img src="img/backup_slides/k8s_deployment_and_pods.svg" style="width:90%"/>
+		</section>
+
+		<section>
+			<img src="img/backup_slides/k8s_service_and_pods.svg" style="width:90%" />
+		</section>
+
+		<section>
+	<h3>Pods</h3>
+	<div class="container">
+		<div class="row">
+			<div class='col-md-6'>
+				<ul>
+					<li>See each other on localhost</li>
+					<li>Live and die together</li>
+					<li>Can expose multiple ports</li>
+				</ul>
+			</div>
+			<div class='col-md-5'>
+				<img src="img/backup_slides/k8s_pod.svg" style="width:90%" />
+			</div>
+		</div>
+	</div>
+</section>
+
+<section>
+	<h3>Side-cars</h3>
+	<img src="img/backup_slides/k8s_pod_2.svg" style="width:90%" />
+</section>
+
+	<section>
+				<h4>Basic Concepts</h4>
+				<p><table>
+					<thread>
+						<tr>
+							<th>Name</th><th>Purpose</th><th></th>
+						</tr>
+					</thread>
+					<tbody>
+						<tr>
+							<td>Service</td><td>Interface</td><td>Entry point (Service Name)</td>
+						</tr>
+						<tr>
+							<td>Deployment</td><td>Factory</td><td>How many pods, which pods</td>
+						</tr>
+						<tr>
+							<td>Pod</td><td>Implementation</td><td>1+ docker running</td>
+						</tr>
+					</tbody>
+				</table></p>
+			</section>
+
+					<section>
+						<h4>Rolling Release with Deployments</h4>
+						<img src="img/backup_slides/k8s_rolling_out_updates.svg" style="width:80%"><br />
+						<small>Also possible</small>
+					</section>
+		</div>
+	</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			// - https://github.com/hakimel/reveal.js#dependencies
+			Reveal.initialize({
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				]
+			});
+		</script>
+	</body>
+</html>
