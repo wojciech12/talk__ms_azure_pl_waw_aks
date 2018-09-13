@@ -6,4 +6,4 @@ Slides from my talk at `25th Azure User Group meetup in Warsaw <https://www.meet
 
 What are the benefits of K8S? How to start with AKS? I avoided to go too deep into k8s, e.g., no yaml files.
 
-Presentation: `slides/ <slides/>`_. check also `the pdf export <slides/index.pdf>`_
+Presentation: `in pdf <slides/index.pdf>`_ and its source (revealjs) - `slides/ <slides/>`_.
