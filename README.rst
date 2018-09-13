@@ -2,8 +2,8 @@
 Azure Kubernetes Service - Introduction and My Experience
 =========================================================
 
-Slides from my talk at [25th Azure User Group meetup in Warsaw](https://www.meetup.com/Microsoft-Azure-Users-Group-Poland/events/254343549/)
+Slides from my talk at `25th Azure User Group meetup in Warsaw <https://www.meetup.com/Microsoft-Azure-Users-Group-Poland/events/254343549/>`_
 
 What are the benefits of K8S? How to start with AKS? I avoided to go too deep into k8s, e.g., no yaml files.
 
-Presentation: [slides/](slides/). check also `the pdf export <slides/index.pdf>`_
+Presentation: `slides/ <slides/>`_. check also `the pdf export <slides/index.pdf>`_
